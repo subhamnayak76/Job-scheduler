@@ -3,25 +3,16 @@ const mongoose = require("mongoose");
 const Job = require("./model/jobHandler");
 const { MONGO_URI } = require("./config/config");
 const connectDB = require('./utils/db')
+const helmet = require('helmet')
+const compression = require('compression')
+const jobRoute = require('./routes/jobRoutes')
 const app = express();
 app.use(express.json());
+app.use(helmet())
+app.use(compression())
 
 
-connectDB()
-
-app.post("/create-job", async (req, res) => { 
-  try {
-    const { type, data, scheduledTime } = req.body;
-    if (!scheduledTime) return res.status(400).json({ error: "Scheduled time is required" });
-
-    const job = new Job({ type, data, scheduledTime, status: "pending" });
-    await job.save();
-
-    res.status(201).json({ success: true, job });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
+app.use('/api/v1',jobRoute)
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
