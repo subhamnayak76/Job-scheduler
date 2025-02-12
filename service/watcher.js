@@ -14,13 +14,19 @@ cron.schedule("* * * * *", async () => {
 
   const now = new Date();
   const jobs = await Job.find({ scheduledTime: { $lte: now }, status: "pending" });
-  console.log('here')
-  console.log(jobs)
+
+  
   for (const job of jobs) {
     logger.info(`Scheduling job ${job._id} for execution...`);
     
     await Job.findByIdAndUpdate(job._id, { status: "processing" });
-    await jobQueue.add(job.type, job);
+    await jobQueue.add(job.type, job,{
+      attempts: 3, 
+      backoff: {
+        type: 'exponential', 
+        delay: 5000,         
+      },
+    });
   }
 });
 

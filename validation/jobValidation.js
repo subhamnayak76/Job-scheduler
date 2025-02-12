@@ -8,8 +8,8 @@ const { z } = require('zod');
     message: z.string().min(1, "Message is required"), 
   }),
   scheduledTime: z.string().regex(
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/,
-    "Invalid scheduledTime format, expected ISO 8601 UTC format (YYYY-MM-DDTHH:mm:ssZ)"
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/,
+    "Invalid scheduledTime format, expected YYYY-MM-DDTHH:mm:ss (IST)"
   ),
 });
 

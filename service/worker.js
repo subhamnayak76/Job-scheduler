@@ -10,6 +10,8 @@ const redisClient = new Redis({ host: REDIS_HOST, port: REDIS_PORT });
 const redlock = new RedLock([redisClient], {
   retryCount: 3,
 });
+
+
 connectDB()
 const jobWorker = new Worker("jobQueue", async (job) => {
   logger.info(`Processing job: ${job.id}, Type: ${job.name}`);
@@ -29,15 +31,18 @@ const jobWorker = new Worker("jobQueue", async (job) => {
     logger.error(`Job ${job.id} failed:`, error);
     await Job.findByIdAndUpdate(job.data._id, { status: "failed" });
   }
-}, { connection: { host: REDIS_HOST, port: REDIS_PORT } });
+}, { connection: { host: REDIS_HOST, port: REDIS_PORT } ,settings: {
+  stalledInterval: 30000, 
+  maxStalledCount: 1,       
+},},);
 
 logger.info("Worker started...");
 
-// Email Sending Function
+
 async function sendEmail(to,from,subject,message) {
   const transporter = nodemailer.createTransport({
     service: "Gmail",
-    auth: { user: '', pass: '' },
+    auth: { user: process.env.USER, pass: process.env.APP_PASS },
   });
 
   await transporter.sendMail({
@@ -49,3 +54,12 @@ async function sendEmail(to,from,subject,message) {
 
   logger.info(`Email sent to ${to}`);
 }
+
+jobWorker.on('failed', (job, err) => {
+  logger.error(`Job ${job.id} failed: ${err.message}`);
+});
+
+jobWorker.on('stalled', (job) => {
+  logger.warn(`Job ${job.id} stalled and will be retried if attempts remain.`);
+
+})
