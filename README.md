@@ -71,11 +71,17 @@ Run the worker service:
 cd service
 node worker.js
 ```
-
+To Scale multiple worker use
+```bash
+node worker.js
+node worker.js
+node worker.js
+```
 ---
 
 ## API Endpoints
 ### 1. Create a Job (Schedule Task)
+### time should be is this format 2025-02-12T12:47:00
 **Endpoint:** `POST /api/v1/create-job`
 
 **Request Body:**
@@ -112,7 +118,7 @@ node worker.js
 ```
 
 ### 2. Get All Jobs
-**Endpoint:** `GET /api/v1/job`
+**Endpoint:** `GET /api/v1/jobs`
 
 ### 3. Get Job by ID
 **Endpoint:** `GET /api/v1/job/:id`
