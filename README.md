@@ -1,4 +1,4 @@
-# Job Scheduler System
+# Distributed Job Scheduler System
 
 ## Overview
 This project is a distributed job scheduling system built with **Node.js, BullMQ, Redis, MongoDB, and Docker**. It allows users to schedule jobs (such as sending emails) to be executed at a specific time. The system ensures that jobs execute **only once** even in a distributed environment, handling worker crashes and concurrency efficiently.
@@ -68,7 +68,7 @@ node watcher.js
 ```
 Run the worker service:
 ```bash
-cd sevice
+cd service
 node worker.js
 ```
 
